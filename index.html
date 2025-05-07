@@ -1,0 +1,87 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Lista Esperti</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background-color: #f4f6f8;
+      margin: 0;
+      padding: 2rem;
+    }
+    .container {
+      max-width: 900px;
+      margin: auto;
+      background: #fff;
+      padding: 2rem;
+      border-radius: 8px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    }
+    h1 {
+      color: #2c3e50;
+      font-size: 2rem;
+      margin-bottom: 1.5rem;
+    }
+    ul.expert-list {
+      list-style: none;
+      padding: 0;
+    }
+    ul.expert-list li {
+      margin-bottom: 1rem;
+      padding: 1rem;
+      background: #f9fafb;
+      border: 1px solid #e1e4e8;
+      border-radius: 6px;
+    }
+    .expert-link {
+      text-decoration: none;
+      color: #007acc;
+      font-weight: bold;
+      font-size: 1.1rem;
+    }
+    .institution {
+      display: block;
+      color: #555;
+      margin-top: 0.2rem;
+      font-size: 0.95rem;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Expert List</h1>
+    <ul class="expert-list" id="expertList"></ul>
+  </div>
+
+  <script>
+    const SHEET_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vTdpMHXD-4Zg7Qk9kh-KTcbbzuDgC02qxEEG8xl-rymwC0e_hLQdDhUqNUaIdyGUBj-mRuEQchReD5S/pub?output=csv'; // <-- sostituisci con il tuo URL
+
+    fetch(SHEET_URL)
+      .then(res => res.text())
+      .then(csv => {
+        const lines = csv.trim().split('\n');
+        const headers = lines[0].split(',');
+        const data = lines.slice(1).map(line => {
+          const values = line.split(',');
+          return headers.reduce((obj, h, i) => {
+            obj[h.trim()] = values[i] ? values[i].trim() : '';
+            return obj;
+          }, {});
+        });
+
+        const list = document.getElementById('expertList');
+        data.forEach(person => {
+          const li = document.createElement('li');
+          li.innerHTML = `
+            <a class="expert-link" href="?id=${person["ID"]}">${person["Full Name"]}</a>
+            <span class="institution">${person["Institution"]}</span>
+          `;
+          list.appendChild(li);
+        });
+      });
+  </script>
+</body>
+</html>
